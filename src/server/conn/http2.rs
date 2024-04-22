@@ -42,7 +42,6 @@ pin_project! {
 pub struct Builder<E> {
     exec: E,
     timer: Time,
-    date_header: bool,
     h2_builder: proto::h2::server::Config,
 }
 
@@ -118,7 +117,6 @@ impl<E> Builder<E> {
             exec,
             timer: Time::Empty,
             h2_builder: Default::default(),
-            date_header: true,
         }
     }
 
@@ -285,7 +283,7 @@ impl<E> Builder<E> {
     ///
     /// Default is true.
     pub fn add_date_header(&mut self, enabled: bool) -> &mut Self {
-        self.date_header = enabled;
+        self.h2_builder.date_header = enabled;
         self
     }
 

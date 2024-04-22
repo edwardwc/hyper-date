@@ -367,7 +367,8 @@ impl Builder {
     ///
     /// Default is true.
     pub fn add_date_header(&mut self, enabled: bool) -> &mut Self {
-        self.date_header = false;
+        self.date_header = enabled;
+        self
     }
 
     /// Aggregates flushes to better support pipelined responses.

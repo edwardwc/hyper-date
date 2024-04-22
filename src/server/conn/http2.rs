@@ -118,6 +118,7 @@ impl<E> Builder<E> {
             exec,
             timer: Time::Empty,
             h2_builder: Default::default(),
+            date_header: true,
         }
     }
 
@@ -284,7 +285,8 @@ impl<E> Builder<E> {
     ///
     /// Default is true.
     pub fn add_date_header(&mut self, enabled: bool) -> &mut Self {
-        self.date_header = false;
+        self.date_header = enabled;
+        self
     }
 
     /// Bind a connection together with a [`Service`](crate::service::Service).

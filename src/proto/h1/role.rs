@@ -2702,10 +2702,46 @@ mod tests {
         )
         .unwrap();
 
+        // this will also test that the date does exist
         let expected_response =
             b"HTTP/1.1 200 OK\r\nCONTENT-LENGTH: 10\r\nContent-Type: application/json\r\nDate: ";
 
         assert_eq!(&vec[..expected_response.len()], &expected_response[..]);
+    }
+
+    #[test]
+    fn test_disabled_date_header() {
+        use crate::proto::BodyLength;
+        use http::header::{HeaderValue, CONTENT_LENGTH};
+
+        let mut head = MessageHead::default();
+        head.headers
+            .insert("content-length", HeaderValue::from_static("10"));
+        head.headers
+            .insert("content-type", HeaderValue::from_static("application/json"));
+
+        let mut orig_headers = HeaderCaseMap::default();
+        orig_headers.insert(CONTENT_LENGTH, "CONTENT-LENGTH".into());
+        head.extensions.insert(orig_headers);
+
+        let mut vec = Vec::new();
+        Server::encode(
+            Encode {
+                head: &mut head,
+                body: Some(BodyLength::Known(10)),
+                keep_alive: true,
+                req_method: &mut None,
+                title_case_headers: true,
+                date_header: false,
+            },
+            &mut vec,
+        )
+            .unwrap();
+
+        let expected_response =
+            b"HTTP/1.1 200 OK\r\nCONTENT-LENGTH: 10\r\nContent-Type: application/json\r\n\r\n";
+
+        assert_eq!(&vec, &expected_response);
     }
 
     #[test]

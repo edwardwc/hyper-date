@@ -224,7 +224,7 @@ where
                         ping,
                         conn,
                         closing: None,
-                        date_header: self.date_header
+                        date_header: me.date_header
                     })
                 }
                 State::Serving(ref mut srv) => {
@@ -308,7 +308,7 @@ where
                             req.extensions_mut().insert(Protocol::from_inner(protocol));
                         }
 
-                        let fut = H2Stream::new(service.call(req), connect_parts, respond);
+                        let fut = H2Stream::new(service.call(req), connect_parts, respond, self.date_header);
                         exec.execute_h2stream(fut);
                     }
                     Some(Err(e)) => {
@@ -464,7 +464,7 @@ where
                     super::strip_connection_headers(res.headers_mut(), false);
 
                     // set Date header if it isn't already set if instructed
-                    if self.date_header {
+                    if *me.date_header {
                         res.headers_mut()
                             .entry(::http::header::DATE)
                             .or_insert_with(date::update_and_header_value);
